@@ -48,7 +48,7 @@ namespace BookStore.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("BookStore.Models.Book", b =>
@@ -75,7 +75,7 @@ namespace BookStore.Migrations
 
                     b.HasIndex("GenreId");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("BookStore.Models.Country", b =>
@@ -92,7 +92,7 @@ namespace BookStore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
                 });
 
             modelBuilder.Entity("BookStore.Models.Genre", b =>
@@ -109,7 +109,7 @@ namespace BookStore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genres", (string)null);
                 });
 
             modelBuilder.Entity("BookStore.Models.Author", b =>

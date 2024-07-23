@@ -1,4 +1,5 @@
-﻿using BookStore.DTOs.AuthorDTOs;
+﻿using AutoMapper;
+using BookStore.DTOs.AuthorDTOs;
 using BookStore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace BookStore.Controllers
     [ApiController]
     public class AuthorsController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly ClassDbContext _dbContext;
-        public AuthorsController(ClassDbContext classDbContext)
+        public AuthorsController(ClassDbContext classDbContext, IMapper mapper)
         {
             _dbContext = classDbContext;
+            _mapper = mapper;
         }
         [HttpGet("Get")]
         public async Task<IActionResult> Get(int id)
@@ -35,15 +38,7 @@ namespace BookStore.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(AuthorDTO authorDTO)
         {
-            Author author = new Author()
-            {
-                Name = authorDTO.Name,
-                Surname = authorDTO.Surname,
-                Birth = authorDTO.Birth,
-                CountryId = authorDTO.CountryId,
-
-
-            };
+            Author author = _mapper.Map<Author>(authorDTO);
             _dbContext.Authors.Add(author);
             await _dbContext.SaveChangesAsync();
             return Ok(author);
@@ -52,16 +47,7 @@ namespace BookStore.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(int id, AuthorDTO authorDTO)
         {
-            Author author = new Author()
-            {
-                Name = authorDTO.Name,
-                Surname = authorDTO.Surname,
-                Birth = authorDTO.Birth,
-                CountryId = authorDTO.CountryId,
-
-
-            };
-
+            Author author = _mapper.Map<Author>(authorDTO);
             Author old = _dbContext.Authors.FirstOrDefault(x => x.Id == id);
             old.Surname = authorDTO.Surname;
             old.Name = authorDTO.Name;
@@ -72,14 +58,14 @@ namespace BookStore.Controllers
 
         }
         [HttpDelete("Delete")]
-        public async Task <IActionResult > Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var data = _dbContext.Authors.FirstOrDefault(x=>x.Id==id);
+            var data = _dbContext.Authors.FirstOrDefault(x => x.Id == id);
             _dbContext.Authors.Remove(data);
             _dbContext.SaveChanges();
             return Ok();
 
         }
- 
+
     }
 }

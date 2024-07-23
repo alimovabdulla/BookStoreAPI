@@ -1,4 +1,5 @@
-﻿using BookStore.DTOs.BookDTO;
+﻿using AutoMapper;
+using BookStore.DTOs.BookDTO;
 using BookStore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +11,12 @@ namespace BookStore.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly ClassDbContext _dbContext;
-        public BooksController(ClassDbContext classDbContext)
+        public BooksController(ClassDbContext classDbContext, IMapper mapper)
         {
             _dbContext = classDbContext;
-
+            _mapper = mapper;
         }
         [HttpGet("Get")]
         public async Task<IActionResult> Get(int id)
@@ -25,18 +27,15 @@ namespace BookStore.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
+
             var data = await _dbContext.Books.Include(b=>b.Genre).Include(b=>b.Author).ToListAsync();
             return Ok(data);
         }
         [HttpPost("Create")]
         public async Task<IActionResult> Create(BookDTO bookDTO)
         {
-            Book book = new Book()
-            {
-                Name = bookDTO.Name,
-                AuthorId = bookDTO.AuthorId,
-                GenreId = bookDTO.GenreId,
-            };
+            Book book = _mapper.Map<Book>(bookDTO);
+             
             _dbContext.Books.Add(book);
             _dbContext.SaveChanges();
             return Ok(book);
@@ -44,12 +43,7 @@ namespace BookStore.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update(int id,BookDTO bookDTO)
         {
-            Book book = new Book()
-            {
-                Name = bookDTO.Name,
-                AuthorId = bookDTO.AuthorId,
-                GenreId = bookDTO.GenreId,
-            };
+            Book book = _mapper.Map<Book>(bookDTO);
             Book old = await _dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
             old.Genre = book.Genre;
             old.Name = book.Name;

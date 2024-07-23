@@ -1,4 +1,5 @@
-﻿using BookStore.DTOs.CountyDTOs;
+﻿using AutoMapper;
+using BookStore.DTOs.CountyDTOs;
 using BookStore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace BookStore.Controllers
     [ApiController]
     public class CountriesController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly ClassDbContext _dbContext;
-        public CountriesController(ClassDbContext classDbContext)
+        public CountriesController(ClassDbContext classDbContext, IMapper mapper)
         {
             _dbContext = classDbContext;
+            _mapper = mapper;
         }
 
         [HttpGet("All")]
@@ -32,11 +35,8 @@ namespace BookStore.Controllers
         [HttpPost("Create")]
         public  async Task <IActionResult> Create(CountryDTO countrydto)
         {
-            Country country = new Country()
-            {
-                Name = countrydto.Name,
-
-            };
+            Country country =  _mapper.Map<Country>(countrydto);
+             
             _dbContext.Countries.Add(country);
             _dbContext.SaveChanges();
             return Ok(country);
